@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Recipe Details</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <h1>Recipe Details</h1>
+    <a href="index.html" class="back-btn">← Back to All Recipes</a>
+  </header>
+
+  <main id="recipeDetail" class="recipe-detail">
+    <p>Loading recipe...</p>
+  </main>
+
+  <script>
+    // Get recipe ID from the URL
+    const params = new URLSearchParams(window.location.search);
+    const recipeId = params.get("id");
+
+    async function loadRecipe() {
+      const res = await fetch(`https://namibianrecipebook-default-rtdb.firebaseio.com/recipes/${recipeId}.json`);
+      const recipe = await res.json();
+
+      if (!recipe) {
+        document.getElementById("recipeDetail").innerHTML = "<p>Recipe not found.</p>";
+        return;
+      }
+
+      document.getElementById("recipeDetail").innerHTML = `
+        <div class="card">
+          <h2>${recipe.title}</h2>
+          <p><strong>Description:</strong> ${recipe.description}</p>
+          <h3>Ingredients</h3>
+          <p>${recipe.ingredients.replace(/\n/g, "<br>")}</p>
+          <h3>Steps</h3>
+          <p>${recipe.steps.replace(/\n/g, "<br>")}</p>
+          <p class="time">Added on: ${new Date(recipe.timestamp).toLocaleString()}</p>
+        </div>
+      `;
+    }
+
+    loadRecipe();
+  </script>
+</body>
+</html>
